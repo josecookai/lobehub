@@ -24,9 +24,16 @@ type OpenAICompatibleContentPart =
   | OpenAI.ChatCompletionContentPart
   | UserMessageContentPart;
 
-const isInternalThinkingContentPart = (
-  content: OpenAICompatibleContentPart,
-): content is Extract<UserMessageContentPart, { type: 'thinking' }> => content.type === 'thinking';
+const INTERNAL_CONTENT_TYPES = new Set([
+  'thinking',
+  'reasoning',
+  'reasoning_signature',
+  'reasoning_part',
+  'flagged_reasoning_signature',
+]);
+
+const isInternalThinkingContentPart = (content: OpenAICompatibleContentPart): boolean =>
+  INTERNAL_CONTENT_TYPES.has(content.type);
 
 export const convertMessageContent = async (
   content: OpenAI.ChatCompletionContentPart | ExtendedChatCompletionContentPart,
