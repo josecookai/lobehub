@@ -86,13 +86,15 @@ export const convertOpenAIMessages = async (
         content:
           typeof message.content === 'string'
             ? message.content
-            : await Promise.all(
-                (message.content || [])
-                  .filter((c) => !isInternalThinkingContentPart(c as OpenAICompatibleContentPart))
-                  .map((c) =>
-                    convertMessageContent(c as OpenAI.ChatCompletionContentPart, options),
-                  ),
-              ),
+            : message.content == null
+              ? message.content
+              : await Promise.all(
+                  message.content
+                    .filter((c) => !isInternalThinkingContentPart(c as OpenAICompatibleContentPart))
+                    .map((c) =>
+                      convertMessageContent(c as OpenAI.ChatCompletionContentPart, options),
+                    ),
+                ),
         role: msg.role,
       };
 
