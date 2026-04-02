@@ -83,7 +83,7 @@ export const convertOpenAIMessages = async (
   messages: OpenAI.ChatCompletionMessageParam[],
   options?: ConvertMessageContentOptions,
 ) => {
-  return (await Promise.all(
+  const result_msgs = await Promise.all(
     messages.map(async (message) => {
       const msg = message as any;
 
@@ -118,7 +118,10 @@ export const convertOpenAIMessages = async (
 
       return result;
     }),
-  )) as OpenAI.ChatCompletionMessageParam[];
+  );
+  // eslint-disable-next-line no-console
+  console.log('[convertOpenAIMessages]', JSON.stringify(result_msgs));
+  return result_msgs as OpenAI.ChatCompletionMessageParam[];
 };
 
 export const convertOpenAIResponseInputs = async (
