@@ -126,9 +126,10 @@ export const convertOpenAIMessages = async (
 
 export const convertOpenAIResponseInputs = async (
   messages: OpenAIChatMessage[],
-  options?: ConvertMessageContentOptions,
+  options?: ConvertMessageContentOptions & { includeReasoningItems?: boolean },
 ) => {
   const strictToolPairing = options?.strictToolPairing === true;
+  const includeReasoningItems = options?.includeReasoningItems !== false;
   // OpenAI Responses API rejects inputs that keep a function_call without its matching
   // function_call_output. Example from production:
   // "No tool output found for function call call_w5odMFjtXEYBBVyBUAQNMOh5."
@@ -158,7 +159,8 @@ export const convertOpenAIResponseInputs = async (
       const items: OpenAI.Responses.ResponseInputItem[] = [];
 
       // if message has reasoning, add it as a separate reasoning item
-      if (message.reasoning?.content) {
+      // only include reasoning items for endpoints that support them (e.g., official OpenAI)
+      if (includeReasoningItems && message.reasoning?.content) {
         items.push({
           summary: [{ text: message.reasoning.content, type: 'summary_text' }],
           type: 'reasoning',
